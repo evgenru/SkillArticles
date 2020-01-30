@@ -20,7 +20,10 @@ class ArticleViewModel(private val articleId: String) : BaseViewModel<ArticleSta
                 title = article.title,
                 category = article.category,
                 categoryIcon = article.categoryIcon,
-                date = article.date.format()
+                date = article.date.format(),
+                author = article.author,
+                content = article.content,
+                poster = article.poster
             )
         }
 
@@ -83,7 +86,7 @@ class ArticleViewModel(private val articleId: String) : BaseViewModel<ArticleSta
         toggleLike()
 
         val msg = if (currentState.isLike) Notify.TextMessage("Mark is liked")
-        else Notify.ActionMessage("Are you sure?", "Cancel", toggleLike)
+        else Notify.ActionMessage("Don`t like it anymore", "No, still like it", toggleLike)
 
         notify(msg)
     }
@@ -91,6 +94,11 @@ class ArticleViewModel(private val articleId: String) : BaseViewModel<ArticleSta
     override fun handleBookmark() {
         val info = currentState.toArticlePersonalInfo()
         repository.updateArticlePersonalInfo(info.copy(isBookmark = !info.isBookmark))
+
+        val msg = if (currentState.isBookmark) Notify.TextMessage("Add to bookmarks")
+        else Notify.TextMessage("Remove from bookmarks")
+
+        notify(msg)
     }
 
     override fun handleShare() {
@@ -129,7 +137,7 @@ data class ArticleState(
     val category: String? = null,
     val categoryIcon: Any? = null,
     val date: String? = null,
-    val author: Any? = null,
+    val author: Any? = "Skill-Branch",
     val poster: String? = null,
     val content: List<Any> = emptyList(),
     val reviews: List<Any> = emptyList()

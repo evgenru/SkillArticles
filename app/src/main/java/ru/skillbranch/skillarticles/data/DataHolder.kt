@@ -11,10 +11,13 @@ import java.util.*
 
 object LocalDataHolder {
     private var isDalay = true
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val articleData = MutableLiveData<ArticleData?>(null)
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val articleInfo = MutableLiveData<ArticlePersonalInfo?>(null)
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     val settings = MutableLiveData(AppSettings())
 

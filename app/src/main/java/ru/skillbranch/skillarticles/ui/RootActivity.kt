@@ -1,7 +1,9 @@
 package ru.skillbranch.skillarticles.ui
 
 import android.os.Bundle
+import android.view.Menu
 import android.widget.ImageView
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -19,7 +21,10 @@ import ru.skillbranch.skillarticles.viewmodels.ViewModelFactory
 
 class RootActivity : AppCompatActivity() {
 
+    private var searchView: SearchView? = null
     private lateinit var viewModel: ArticleViewModel
+    private var isSearch = false
+    private var searchQuery = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,6 +114,18 @@ class RootActivity : AppCompatActivity() {
         toolbar.subtitle = data.category ?: "loading"
         if (data.categoryIcon != null) toolbar.logo = getDrawable(data.categoryIcon as Int)
 
+        isSearch = data.isSearch
+        searchQuery = data.searchQuery ?: ""
+        refreshSearchView()
+    }
+
+    private fun refreshSearchView() {
+        if (searchView?.query.toString() != searchQuery) {
+            searchView?.setQuery(searchQuery, false)
+        }
+        if (searchView?.isIconified != !isSearch) {
+            searchView?.isIconified = !isSearch
+        }
     }
 
     private fun setupToolbar() {
@@ -123,5 +140,37 @@ class RootActivity : AppCompatActivity() {
             it.marginEnd = this.dpToIntPx(16)
             logo.layoutParams = it
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        with(menu.findItem(R.id.action_search).actionView as SearchView) {
+            searchView = this
+            setOnSearchClickListener {
+                viewModel.handleSearchMode(true)
+            }
+            setOnCloseListener {
+                viewModel.handleSearchMode(false)
+                false
+            }
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    viewModel.handleSearch(query)
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.handleSearch(newText)
+                    return true
+                }
+
+            })
+        }
+        refreshSearchView()
+        return super.onPrepareOptionsMenu(menu)
     }
 }

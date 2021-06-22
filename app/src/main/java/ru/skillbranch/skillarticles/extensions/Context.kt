@@ -6,6 +6,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.TypedValue
 
+
 fun Context.dpToPx(dp: Int): Float {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
@@ -21,6 +22,10 @@ fun Context.dpToIntPx(dp: Int): Int {
         dp.toFloat(),
         this.resources.displayMetrics
     ).toInt()
+}
+
+fun Context.pxToDp(px: Int): Int {
+    return (px / resources.displayMetrics.density).toInt()
 }
 
 val Context.isNetworkAvailable: Boolean

@@ -3,9 +3,7 @@ package ru.skillbranch.skillarticles.data
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import ru.skillbranch.skillarticles.R
 import java.util.*
 
@@ -23,16 +21,17 @@ object LocalDataHolder {
 
     fun findArticle(articleId: String): LiveData<ArticleData?> {
         GlobalScope.launch {
-            if (isDalay) delay(2000)
-            articleData.postValue(
-                ArticleData(
-                    title = "CoordinatorLayout Basic",
-                    category = "Android",
-                    categoryIcon = R.drawable.logo,
-                    date = Date(),
-                    author = "Skill-Branch"
-                )
-            )
+            if (isDalay) delay(1000)
+            withContext(Dispatchers.Main){
+                articleData.value = ArticleData(
+                        title = "CoordinatorLayout Basic",
+                        category = "Android",
+                        categoryIcon = R.drawable.logo,
+                        date = Date(),
+                        author = "Skill-Branch"
+                    )
+            }
+
         }
         return articleData
 
@@ -40,8 +39,10 @@ object LocalDataHolder {
 
     fun findArticlePersonalInfo(articleId: String): LiveData<ArticlePersonalInfo?> {
         GlobalScope.launch {
-            if (isDalay) delay(1000)
-            articleInfo.postValue(ArticlePersonalInfo(isBookmark = true))
+            if (isDalay) delay(500)
+            withContext(Dispatchers.Main){
+                articleInfo.value = ArticlePersonalInfo(isBookmark = true)
+            }
         }
         return articleInfo
     }
@@ -56,27 +57,30 @@ object LocalDataHolder {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun disableDelay() {
-        isDalay = false
+    fun disableDelay(value:Boolean = false) {
+        isDalay = value
     }
 }
 
 object NetworkDataHolder {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val content = MutableLiveData<List<Any>?>(null)
+    val content = MutableLiveData<List<String>?>(null)
     private var isDelay = true
 
-    fun loadArticleContent(articleId: String): LiveData<List<Any>?> {
+    fun loadArticleContent(articleId: String): LiveData<List<String>?> {
         GlobalScope.launch {
-            if (isDelay) delay(5000)
-            content.postValue(listOf(longText))
+            if (isDelay) delay(1500)
+            withContext(Dispatchers.Main){
+                content.value = listOf(longText)
+            }
+
         }
         return content
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun disableDelay() {
-        isDelay = false
+    fun disableDelay(value:Boolean = false) {
+        isDelay = value
     }
 }
 
@@ -88,7 +92,7 @@ data class ArticleData(
     val date: Date,
     val author: Any? = null,
     val poster: String? = null,
-    val content: List<Any> = emptyList()
+    val content: List<String> = emptyList()
 )
 
 data class ArticlePersonalInfo(

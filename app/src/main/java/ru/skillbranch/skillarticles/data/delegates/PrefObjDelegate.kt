@@ -26,7 +26,7 @@ class PrefObjDelegate<T>(
             override fun getValue(thisRef: PrefManager, property: KProperty<*>): T {
                 if (storedValue == null) {
                     val flowValue = thisRef.dataStore.data
-                        .map { it[key] ?: "defaultValue" }
+                        .map { it[key] ?: "" }
                     storedValue = runBlocking {
                         adapter.fromJson(flowValue.first())
                     }

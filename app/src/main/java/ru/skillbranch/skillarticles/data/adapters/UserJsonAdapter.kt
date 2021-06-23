@@ -6,6 +6,7 @@ import ru.skillbranch.skillarticles.extensions.asMap
 
 class UserJsonAdapter() : JsonAdapter<User> {
     override fun fromJson(json: String): User? {
+        json.ifEmpty { return User("","") }
         val jsonObject = JSONObject(json)
         return User(
             id = jsonObject.getString("id"),

@@ -13,7 +13,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.*
 import ru.skillbranch.skillarticles.App
+import ru.skillbranch.skillarticles.data.adapters.UserJsonAdapter
 import ru.skillbranch.skillarticles.data.delegates.PrefDelegate
+import ru.skillbranch.skillarticles.data.delegates.PrefObjDelegate
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore("settings")
 
@@ -46,4 +48,5 @@ class PrefManager(context: Context = App.applicationContext()) {
     var testFloat by PrefDelegate(Float.MAX_VALUE)
     var testString by PrefDelegate("test")
     var testBoolean by PrefDelegate(false)
+    var testUser by PrefObjDelegate(UserJsonAdapter())
 }

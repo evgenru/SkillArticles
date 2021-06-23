@@ -1,7 +1,7 @@
 package ru.skillbranch.skillarticles.data.delegates
 
 import androidx.datastore.preferences.core.edit
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -17,24 +17,24 @@ class PrefObjDelegate<T>(
     operator fun provideDelegate(
         thisRef: PrefManager,
         prop: KProperty<*>
-    ): ReadWriteProperty<PrefManager, T> {
+    ): ReadWriteProperty<PrefManager, T?> {
         val key = PrefDelegate("").createKey(customKey ?: prop.name, "")
 
-        return object : ReadWriteProperty<PrefManager, T> {
+        return object : ReadWriteProperty<PrefManager, T?> {
             private var storedValue: T? = null
 
-            override fun getValue(thisRef: PrefManager, property: KProperty<*>): T {
+            override fun getValue(thisRef: PrefManager, property: KProperty<*>): T? {
                 if (storedValue == null) {
                     val flowValue = thisRef.dataStore.data
-                        .map { it[key] ?: "" }
+                        .map { it[key] }
                     storedValue = runBlocking {
-                        adapter.fromJson(flowValue.first())
+                        flowValue.firstOrNull()?.let { adapter.fromJson(it) }
                     }
                 }
-                return storedValue!!
+                return storedValue
             }
 
-            override fun setValue(thisRef: PrefManager, property: KProperty<*>, value: T) {
+            override fun setValue(thisRef: PrefManager, property: KProperty<*>, value: T?) {
                 storedValue = value
                 thisRef.scope.launch {
                     thisRef.dataStore.edit {
